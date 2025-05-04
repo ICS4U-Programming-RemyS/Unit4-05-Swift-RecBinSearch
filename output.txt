@@ -1,0 +1,12 @@
+[49, 147, 179, 238, 311, 357, 458, 547, 640, 959]
+The value 640 is at index 8 in the array.
+[172, 182, 295, 391, 450, 529, 638, 667, 782, 924]
+The value 182 is at index 1 in the array.
+[49, 142, 288, 332, 472, 715, 834, 881, 946, 983]
+Invalid: 500 is not in the array.
+Invalid:  is not a valid array of integers.
+Invalid: Remy is not a valid array of integers.
+[44, 312, 349, 540, 580, 674, 775, 783, 809, 955]
+Invalid: Hello is not a valid positive integer.
+[158, 283, 335, 370, 403, 436, 451, 582, 796, 932]
+Invalid: -9 is not a valid positive integer.
