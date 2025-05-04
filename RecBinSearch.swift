@@ -1,13 +1,14 @@
-// Fibonacci.swift
+// BinarySearch.swift
 //
 // Created by Remy Skelton
-// Created on 2025-April-6
+// Created on 2025-May-2
 // Version 1.0
 // Copyright (c) Remy Skelton. All rights reserved.
 //
-// This program will read an multiple lines of string from the a input file.
-// If the data is valid then it will calculate the value at the index
-// in the fibonacci sequence and write the result to an output file.
+// This program reads multiple lines of strings from an input file.
+// It checks two lines at a time:
+// one for an array and one for the number to search.
+// If both are valid, it searches for the number in the array.
 
 // Import Foundation
 import Foundation
@@ -20,11 +21,10 @@ enum InputError: Error {
 // Do catch block to catch any errors
 do {
     // Welcome message
-    print("Welcome to the Fibonacci program!")
-    print("This program reads multiple lines", terminator: "")
-    print(" of strings from input.txt, if valid it will ", terminator: "")
-    print("calculates the value at the index in the fibonacci ", terminator: "")
-    print("sequence, and writes the result to output.txt.")
+    print("Welcome to the Recursive Binary Search program!")
+    print("This program will read an array ", terminator: "")
+    print("and a number from a file. If valid it will display", terminator: "")
+    print(" the index it was found at in the output file.")
 
     // Initialize output string
     var outputStr = ""
@@ -53,59 +53,116 @@ do {
     // Create position variable
     var position = 0
 
-    // While loop to read each line
+// While loop to read each array-number pair
     while position < inputLines.count {
 
-        // Split the line into integers
-        let currentLine = inputLines[position]
-        let currentLineArray = currentLine.components(separatedBy: " ")
+        // Get the current line and trim spaces
+        let currentLine = inputLines[position].trimmingCharacters(in: .whitespaces)
+        position += 1
 
-        // For loop to go through array
-        for numberStr in currentLineArray {
-            // Convert the string to an integer
-            guard let number = Int(numberStr) else {
-                // Write an error message to the output string
-                outputStr += "Invalid: \(numberStr) is not a valid positive integer.\n"
-                // Continue to the next iteration
+        // Split the line by spaces to create the string array
+        let unsortedArrayStr = currentLine.components(separatedBy: " ")
+
+        // Declare the integer array
+        var sortedArray = [Int]()
+
+        // Check if the line is empty or only spaces
+        if unsortedArrayStr.count == 1 && unsortedArrayStr[0] == "" {
+            outputStr += "Invalid: \(currentLine) is not a valid array of integers.\n"
+            continue
+        }
+
+        // Try converting string values to integers
+        do {
+            for index in 0..<unsortedArrayStr.count {
+                if let intVal = Int(unsortedArrayStr[index]) {
+                    sortedArray.append(intVal)
+                } else {
+                    throw InputError.invalidInput
+                }
+            }
+        } catch {
+            // If conversion fails, write an error and continue
+            outputStr += "Invalid: \(currentLine) is not a valid array of integers.\n"
+            continue
+        }
+
+        // Sort the array
+        sortedArray.sort()
+
+        // Check if there is a next line for the search number
+        if position < inputLines.count {
+            // Get the next line and trim spaces
+            let numberStr = inputLines[position].trimmingCharacters(in: .whitespaces)
+            position += 1
+
+            // Try converting the string to an integer
+            if let number = Int(numberStr) {
+                // Check if the number is negative
+                if number < 0 {
+                    outputStr += "\(sortedArray)\nInvalid: \(numberStr) is not a valid positive integer.\n"
+                    continue
+                } else {
+                    // Set low = 0 and high = length of array - 1
+                    let low = 0
+                    let high = sortedArray.count - 1
+
+                    // Call the recursive binary search function
+                    let indexBiSer = recBinSer(array: sortedArray, number: number, low: low, high: high)
+
+
+                    // Check if the number is in the array
+                    if indexBiSer == -1 {
+                        outputStr += "\(sortedArray)\nInvalid: \(number) is not in the array.\n"
+                        continue
+                    } else {
+                        outputStr += "\(sortedArray)\nThe value \(number) is at index \(indexBiSer) in the array.\n"
+                    }
+                }
+
+            } else {
+                // If number string is not a valid integer
+                outputStr += "\(sortedArray)\nInvalid: \(numberStr) is not a valid positive integer.\n"
                 continue
             }
-
-            // Check if the integer is negative
-            if number < 0 {
-                // Write an error message to the output string
-                outputStr += "Invalid: \(numberStr) is not a valid positive integer.\n"
-            } else {
-                // Call the recFib function
-                let valueFib = recFib(number: number)
-
-                // Append the result to the output string
-                outputStr += "The value in the Fibonacci Sequence at \(number) = \(valueFib)\n"
-            }
         }
-        // Increment the position
-        position += 1
     }
 
     // Write to output.txt
     try outputStr.write(toFile: outputFile, atomically: true, encoding: .utf8)
 
     // Print the that the output is written to the file
-    print("Fibonacci written to output.txt.")
+    print("Binary Search results written to output.txt.")
 
 } catch {
     // Print the error message
     print("Error: \(error)")
 }
 
-// Function to to find fibonacci of integer using recursion
-func recFib(number: Int) -> Int {
-    // Base case: if the number is less than or equal to 1 return the number
-    if number <= 1 {
-        // Return the number if it is 0 or 1
-        return number
-    } else {
-        // Return the sum of the last 2 term in the Fibonacci sequence
-        return recFib(number: number - 1) + recFib(number: number - 2)
+// Function to perform recursive binary search
+func recBinSer(array: [Int], number: Int, low: Int, high: Int) -> Int {
+    // Set mid to the middle index of the array
+    let mid = (low + high) / 2
 
+    // Check if the low index is greater than the high index
+    if low > high {
+        // Return -1 if the number is not found
+        return -1
+
+    } else if array[mid] == number {
+        // Check if the number is equal to the middle element
+        // Return the index of the number in the array
+        return mid
+
+    } else {
+        // Check if the number is less than the middle element
+        if number < array[mid] {
+            // Call the method recursively with the low index and mid - 1
+            return recBinSer(array: array, number: number, low: low, high: mid - 1)
+
+        } else {
+            // Call the method recursively with the mid + 1 and high index
+            return recBinSer(array: array, number: number, low: mid + 1, high: high)
+        }
     }
 }
