@@ -110,7 +110,6 @@ do {
                     // Call the recursive binary search function
                     let indexBiSer = recBinSer(array: sortedArray, number: number, low: low, high: high)
 
-
                     // Check if the number is in the array
                     if indexBiSer == -1 {
                         outputStr += "\(sortedArray)\nInvalid: \(number) is not in the array.\n"
